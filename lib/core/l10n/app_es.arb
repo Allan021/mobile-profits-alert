@@ -1,0 +1,129 @@
+{
+  "@@locale": "es",
+
+  "appName": "ProfitAlerts",
+  "marketFeed": "Feed de Mercado",
+  "latestSentiment": "Último análisis de sentimiento",
+
+  "loginTitle": "Bienvenido de nuevo",
+  "loginSubtitle": "Inicia sesión en tu cuenta",
+  "emailLabel": "Correo electrónico",
+  "passwordLabel": "Contraseña",
+  "signIn": "Iniciar sesión",
+  "continueWithGoogle": "Continuar con Google",
+  "noAccount": "¿No tienes cuenta?",
+  "signUp": "Regístrate",
+  "demoHint": "",
+  "invalidCredentials": "Correo o contraseña incorrectos",
+
+  "registerTitle": "Crear cuenta",
+  "registerSubtitle": "Empieza a seguir tus acciones",
+  "fullName": "Nombre completo",
+  "confirmPassword": "Confirmar contraseña",
+  "createAccount": "Crear cuenta",
+  "alreadyHaveAccount": "¿Ya tienes cuenta?",
+  "passwordsNoMatch": "Las contraseñas no coinciden",
+
+  "choosePlan": "Elige tu plan",
+  "choosePlanSubtitle": "Empieza gratis con 50 análisis IA/mes. Mejora a Pro para acceso ilimitado.",
+  "startFree": "Empezar gratis",
+  "subscribe": "Suscribirse",
+  "paymentComingSoon": "Integración de pagos próximamente",
+  "mostPopular": "Más popular",
+  "perMonth": "/mes",
+  "freeFeature1": "50 análisis IA por mes",
+  "freeFeature2": "Noticias financieras con retraso",
+  "freeFeature3": "Máx. 5 tickers en watchlist",
+  "freeFeature4": "Análisis básico de sentimiento",
+  "freeFeature5": "Sin push notifications",
+  "freeFeature6": "Sin alertas en tiempo real",
+  "proFeature1": "Análisis IA ilimitados",
+  "proFeature2": "Push notifications",
+  "proFeature3": "Watchlist ilimitada",
+  "proFeature4": "Alertas en tiempo real por ticker",
+  "proFeature5": "Filtros avanzados",
+  "proFeature6": "Historial de análisis completo",
+  "proFeature7": "Acceso prioritario a funciones beta",
+
+  "feed": "Feed",
+  "watchlist": "Watchlist",
+  "alerts": "Alertas",
+  "settings": "Ajustes",
+
+  "positive": "Positivo",
+  "negative": "Negativo",
+  "neutral": "Neutral",
+  "aiConfidence": "Confianza IA",
+  "readFullArticle": "Leer artículo completo",
+  "affectedTickers": "Acciones afectadas",
+  "analysis": "Análisis",
+  "source": "Fuente",
+
+  "addTicker": "Agregar ticker",
+  "searchTickers": "Buscar tickers...",
+  "watchlistEmpty": "Tu watchlist está vacía.",
+  "watchlistEmptySubtitle": "¡Toca para agregar tu primera acción!",
+  "removeTicker": "Eliminar",
+  "tickerAdded": "Agregado a watchlist",
+  "tickerRemoved": "Eliminado de watchlist",
+
+  "allAlerts": "Todas",
+  "today": "HOY",
+  "yesterday": "AYER",
+  "monthlyQuota": "Cuota mensual de alertas",
+  "alertsUsed": "{used} de {total} alertas usadas este mes",
+  "@alertsUsed": {
+    "placeholders": {
+      "used": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "upgradeToProTitle": "Mejora a Pro",
+  "upgradeToProSubtitle": "Obtén alertas ilimitadas en tiempo real con ProfitAlerts Pro.",
+  "learnMore": "Más información",
+  "alertHistory": "Historial de alertas",
+
+  "preferences": "PREFERENCIAS",
+  "pushNotifications": "Notificaciones push",
+  "pushNotificationsSubtitle": "Alertas del mercado en tiempo real",
+  "emailSummaries": "Resúmenes por email",
+  "emailSummariesSubtitle": "Actualizaciones diarias del portafolio",
+  "appearance": "Apariencia",
+  "account": "CUENTA",
+  "security": "Seguridad",
+  "billingSubscriptions": "Facturación y suscripciones",
+  "helpSupport": "Ayuda y soporte",
+  "language": "IDIOMA",
+  "about": "ACERCA DE",
+  "version": "Versión",
+  "termsOfService": "Términos de servicio",
+  "privacyPolicy": "Política de privacidad",
+  "logOut": "Cerrar sesión",
+  "edit": "Editar",
+  "darkMode": "Oscuro",
+  "lightMode": "Claro",
+  "systemMode": "Sistema",
+
+  "earnings": "Resultados",
+  "highNegative": "Muy negativo",
+  "moderateNegative": "Negativo moderado",
+  "strongBuy": "Compra fuerte",
+  "event": "Evento",
+
+  "agoMinutes": "hace {n}m",
+  "@agoMinutes": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "agoHours": "hace {n}h",
+  "@agoHours": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+
+  "cancel": "Cancelar",
+  "upgradeToPro": "Mejorar a Pro",
+  "seePlans": "Ver Planes",
+  "watchlistLimitReached": "El plan gratuito está limitado a {limit} tickers. Mejora a Pro para una lista de seguimiento ilimitada.",
+  "@watchlistLimitReached": {
+    "placeholders": { "limit": { "type": "int" } }
+  }
+}

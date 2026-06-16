@@ -1,0 +1,129 @@
+{
+  "@@locale": "en",
+
+  "appName": "ProfitAlerts",
+  "marketFeed": "Market Feed",
+  "latestSentiment": "Latest sentiment analysis",
+
+  "loginTitle": "Welcome back",
+  "loginSubtitle": "Sign in to your account",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "signIn": "Sign In",
+  "continueWithGoogle": "Continue with Google",
+  "noAccount": "Don't have an account?",
+  "signUp": "Sign Up",
+  "demoHint": "",
+  "invalidCredentials": "Invalid email or password",
+
+  "registerTitle": "Create account",
+  "registerSubtitle": "Start tracking your stocks",
+  "fullName": "Full name",
+  "confirmPassword": "Confirm password",
+  "createAccount": "Create Account",
+  "alreadyHaveAccount": "Already have an account?",
+  "passwordsNoMatch": "Passwords do not match",
+
+  "choosePlan": "Choose your plan",
+  "choosePlanSubtitle": "Start free with 50 AI analyses/month. Upgrade to Pro for unlimited access.",
+  "startFree": "Start Free",
+  "subscribe": "Subscribe",
+  "paymentComingSoon": "Payment integration coming soon",
+  "mostPopular": "Most Popular",
+  "perMonth": "/month",
+  "freeFeature1": "50 AI analyses per month",
+  "freeFeature2": "Delayed financial news",
+  "freeFeature3": "Max 5 tickers in watchlist",
+  "freeFeature4": "Basic sentiment analysis",
+  "freeFeature5": "No push notifications",
+  "freeFeature6": "No real-time alerts",
+  "proFeature1": "Unlimited AI analyses",
+  "proFeature2": "Push notifications",
+  "proFeature3": "Unlimited watchlist",
+  "proFeature4": "Real-time ticker alerts",
+  "proFeature5": "Advanced filters",
+  "proFeature6": "Full analysis history",
+  "proFeature7": "Priority beta access",
+
+  "feed": "Feed",
+  "watchlist": "Watchlist",
+  "alerts": "Alerts",
+  "settings": "Settings",
+
+  "positive": "Positive",
+  "negative": "Negative",
+  "neutral": "Neutral",
+  "aiConfidence": "AI Confidence",
+  "readFullArticle": "Read Full Article",
+  "affectedTickers": "Affected Tickers",
+  "analysis": "Analysis",
+  "source": "Source",
+
+  "addTicker": "Add Ticker",
+  "searchTickers": "Search tickers to add...",
+  "watchlistEmpty": "Your watchlist is empty.",
+  "watchlistEmptySubtitle": "Tap to add your first stock!",
+  "removeTicker": "Remove",
+  "tickerAdded": "Added to watchlist",
+  "tickerRemoved": "Removed from watchlist",
+
+  "allAlerts": "All Alerts",
+  "today": "TODAY",
+  "yesterday": "YESTERDAY",
+  "monthlyQuota": "Monthly Alerts Quota",
+  "alertsUsed": "{used} of {total} alerts used this month",
+  "@alertsUsed": {
+    "placeholders": {
+      "used": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "upgradeToProTitle": "Upgrade to Pro",
+  "upgradeToProSubtitle": "Get unlimited AI analyses, push notifications, real-time alerts and unlimited watchlist with Profit Alerts Pro — $29.99/month.",
+  "learnMore": "Learn More",
+  "alertHistory": "Alert History",
+
+  "preferences": "PREFERENCES",
+  "pushNotifications": "Push Notifications",
+  "pushNotificationsSubtitle": "Real-time market alerts",
+  "emailSummaries": "Email Summaries",
+  "emailSummariesSubtitle": "Daily portfolio updates",
+  "appearance": "Appearance",
+  "account": "ACCOUNT",
+  "security": "Security",
+  "billingSubscriptions": "Billing & Subscriptions",
+  "helpSupport": "Help & Support",
+  "language": "LANGUAGE",
+  "about": "ABOUT",
+  "version": "Version",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "logOut": "Log Out",
+  "edit": "Edit",
+  "darkMode": "Dark",
+  "lightMode": "Light",
+  "systemMode": "System",
+
+  "earnings": "Earnings",
+  "highNegative": "High Negative",
+  "moderateNegative": "Moderate Negative",
+  "strongBuy": "Strong Buy",
+  "event": "Event",
+
+  "agoMinutes": "{n}m ago",
+  "@agoMinutes": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+  "agoHours": "{n}h ago",
+  "@agoHours": {
+    "placeholders": { "n": { "type": "int" } }
+  },
+
+  "cancel": "Cancel",
+  "upgradeToPro": "Upgrade to Pro",
+  "seePlans": "See Plans",
+  "watchlistLimitReached": "Free plan is limited to {limit} tickers. Upgrade to Pro for an unlimited watchlist.",
+  "@watchlistLimitReached": {
+    "placeholders": { "limit": { "type": "int" } }
+  }
+}
