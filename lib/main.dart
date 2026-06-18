@@ -13,6 +13,24 @@ import 'services/notification_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // ponytail: TEMP diagnostic — release builds show a blank/grey screen on a
+  // build-phase crash. Surface the actual error text instead so a white screen
+  // self-reports. Remove once boot is confirmed stable.
+  ErrorWidget.builder = (details) => Material(
+        color: const Color(0xFF0A0F1E),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              child: Text(
+                'Boot error:\n\n${details.exception}\n\n${details.stack}',
+                style: const TextStyle(color: Color(0xFFFF6B6B), fontSize: 12),
+              ),
+            ),
+          ),
+        ),
+      );
+
   // Edge-to-edge: content renders behind status and gesture bars
   // (required behavior on Android 15+, standard on iOS).
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
