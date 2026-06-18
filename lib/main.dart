@@ -24,8 +24,19 @@ Future<void> main() async {
   ));
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await NotificationService.instance.init();
+  // ponytail: init must never block first paint. A throw here (APNs token,
+  // push permission, Firebase) used to leave a permanent white screen on
+  // TestFlight. Guard each; the app boots regardless, push degrades quietly.
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint('[boot] Firebase init failed: $e');
+  }
+  try {
+    await NotificationService.instance.init();
+  } catch (e) {
+    debugPrint('[boot] Notification init failed: $e');
+  }
   runApp(const ProviderScope(child: ProfitAlertsApp()));
 }
 
