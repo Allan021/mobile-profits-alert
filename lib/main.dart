@@ -42,20 +42,22 @@ Future<void> main() async {
   ));
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // ponytail: init must never block first paint. A throw here (APNs token,
-  // push permission, Firebase) used to leave a permanent white screen on
-  // TestFlight. Guard each; the app boots regardless, push degrades quietly.
+  // ponytail: ONLY Firebase core is awaited (fast, reliable). Push init can
+  // HANG on iOS waiting for an APNs token that never arrives — a hang isn't
+  // caught by try/catch and leaves a permanent white screen. So it runs
+  // fire-and-forget AFTER first paint; the UI never waits on it.
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
     debugPrint('[boot] Firebase init failed: $e');
   }
-  try {
-    await NotificationService.instance.init();
-  } catch (e) {
-    debugPrint('[boot] Notification init failed: $e');
-  }
+
   runApp(const ProviderScope(child: ProfitAlertsApp()));
+
+  // Push setup, off the critical path — failure or hang can't blank the app.
+  NotificationService.instance
+      .init()
+      .catchError((Object e) => debugPrint('[boot] Notification init failed: $e'));
 }
 
 class _SmoothScrollBehavior extends ScrollBehavior {
