@@ -95,15 +95,15 @@ class AlertsScreen extends ConsumerWidget {
                     onPressed: () async {
                       final confirmed = await showDialog<bool>(
                         context: context,
-                        builder: (_) => AlertDialog(
+                        builder: (dialogCtx) => AlertDialog(
                           backgroundColor: isDark ? AppColors.darkCard : AppColors.lightCard,
                           title: Text('Clear all alerts', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
                           content: Text('This will remove all your alerts. Cannot be undone.',
                               style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMuted)),
                           actions: [
-                            TextButton(onPressed: () => Navigator.pop(context, false),
+                            TextButton(onPressed: () => Navigator.pop(dialogCtx, false),
                                 child: Text('Cancel', style: GoogleFonts.inter(color: AppColors.textMuted))),
-                            TextButton(onPressed: () => Navigator.pop(context, true),
+                            TextButton(onPressed: () => Navigator.pop(dialogCtx, true),
                                 child: Text('Clear', style: GoogleFonts.inter(color: AppColors.negativeDark, fontWeight: FontWeight.w700))),
                           ],
                         ),

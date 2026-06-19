@@ -23,7 +23,8 @@ class AppUser {
   int get alertQuota => isFree ? kFreeAlertQuota : 999999;
   int get watchlistLimit => isFree ? kFreeWatchlistMax : 999999;
   bool get quotaExceeded => isFree && alertsUsedThisMonth >= kFreeAlertQuota;
-  bool get canUsePushNotifications => isPro;
+  // Free tier can enable push too; the daily cap is enforced server-side.
+  bool get canUsePushNotifications => true;
   bool get canUseRealTimeAlerts => isPro;
   bool get canUseAdvancedFilters => isPro;
 }
