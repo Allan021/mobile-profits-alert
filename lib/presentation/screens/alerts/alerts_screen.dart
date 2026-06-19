@@ -408,7 +408,7 @@ class _SectionHeader extends StatelessWidget {
       );
 }
 
-class _AlertCard extends StatelessWidget {
+class _AlertCard extends ConsumerWidget {
   final Alert alert;
   final bool isDark;
   final Color primary;
@@ -417,11 +417,20 @@ class _AlertCard extends StatelessWidget {
       {required this.alert, required this.isDark, required this.primary});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final read = ref.watch(readAlertsProvider).contains(alert.id);
     final timeStr =
         '${alert.receivedAt.hour.toString().padLeft(2, '0')}:${alert.receivedAt.minute.toString().padLeft(2, '0')} ${alert.receivedAt.hour < 12 ? 'AM' : 'PM'}';
     return GestureDetector(
-      onTap: () => context.push('/item/${alert.id}'),
+      onTap: () {
+        ref.read(readAlertsProvider.notifier).markRead(alert.id);
+        context.push('/item/${alert.id}');
+      },
+      // long-press toggles seen / unseen
+      onLongPress: () => ref.read(readAlertsProvider.notifier).toggle(alert.id),
+      child: AnimatedOpacity(
+      opacity: read ? 0.5 : 1.0,
+      duration: const Duration(milliseconds: 200),
       child: Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -429,7 +438,9 @@ class _AlertCard extends StatelessWidget {
         color: isDark ? AppColors.darkCard : AppColors.lightCard,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+            color: read
+                ? (isDark ? AppColors.darkBorder : AppColors.lightBorder)
+                : primary.withValues(alpha: 0.35)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +510,18 @@ class _AlertCard extends StatelessWidget {
               ],
             ),
           ),
+          // unread dot
+          if (!read) ...[
+            const SizedBox(width: 8),
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: primary, shape: BoxShape.circle),
+            ),
+          ],
         ],
+      ),
       ),
       ),
     );

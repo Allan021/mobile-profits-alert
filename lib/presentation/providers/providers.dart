@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_exception.dart';
@@ -336,3 +337,39 @@ final alertsUsedProvider = FutureProvider<int>((ref) async {
   final repo = ref.watch(alertsRepoProvider);
   return repo.getAlertsUsedThisMonth();
 });
+
+// ── Read/unread alert state (local, persisted) ─────────────────────────────
+// ponytail: local-only via shared_preferences. No backend column/endpoint —
+// add server sync only if read state needs to follow the user across devices.
+class ReadAlertsNotifier extends StateNotifier<Set<String>> {
+  static const _key = 'read_alert_ids';
+  ReadAlertsNotifier() : super(<String>{}) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = (prefs.getStringList(_key) ?? const []).toSet();
+  }
+
+  Future<void> _save() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_key, state.toList());
+  }
+
+  void markRead(String id) {
+    if (state.contains(id)) {
+      return;
+    }
+    state = {...state, id};
+    _save();
+  }
+
+  void toggle(String id) {
+    state = state.contains(id) ? (state.toSet()..remove(id)) : {...state, id};
+    _save();
+  }
+}
+
+final readAlertsProvider =
+    StateNotifierProvider<ReadAlertsNotifier, Set<String>>((ref) => ReadAlertsNotifier());
