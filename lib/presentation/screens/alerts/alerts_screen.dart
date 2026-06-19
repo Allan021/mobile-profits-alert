@@ -53,13 +53,14 @@ class AlertsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final es = Localizations.localeOf(context).languageCode == 'es';
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = isDark ? AppColors.primaryDark : AppColors.primaryLight;
     final user = ref.watch(authProvider);
     final alerts = ref.watch(alertsProvider);
-    final filter = ref.watch(alertsProvider.notifier).filter;
+    final view = ref.watch(alertViewProvider);
+    final readIds = ref.watch(readAlertsProvider);
 
-    final tabs = [l.allAlerts, l.positive, l.negative, l.earnings];
     final watchlistSymbols = ref.watch(watchlistProvider).maybeWhen(
       data: (tickers) => tickers.map((t) => t.symbol).toList(),
       orElse: () => <String>[],
@@ -130,42 +131,26 @@ class AlertsScreen extends ConsumerWidget {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                children: List.generate(tabs.length, (i) {
-                  final filterVal = AlertFilter.values[i];
-                  final selected = filter == filterVal;
-                  return GestureDetector(
-                    onTap: () =>
-                        ref.read(alertsProvider.notifier).setFilter(filterVal),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                      margin: const EdgeInsets.only(right: 8),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: selected ? primary : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: selected
-                              ? primary
-                              : (isDark
-                                  ? AppColors.darkBorder
-                                  : AppColors.lightBorder),
-                        ),
-                      ),
-                      child: Text(
-                        tabs[i],
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: selected
-                              ? (isDark ? AppColors.black : AppColors.white)
-                              : AppColors.textMuted,
-                        ),
-                      ),
+                children: [
+                  for (final v in AlertView.values) ...[
+                    _FilterChip(
+                      label: _viewLabel(l, v, es),
+                      icon: v == AlertView.positive
+                          ? Icons.trending_up
+                          : v == AlertView.negative
+                              ? Icons.trending_down
+                              : v == AlertView.unread
+                                  ? Icons.circle
+                                  : null,
+                      selected: view == v,
+                      primary: primary,
+                      isDark: isDark,
+                      onTap: () =>
+                          ref.read(alertViewProvider.notifier).state = v,
                     ),
-                  );
-                }),
+                    const SizedBox(width: 8),
+                  ],
+                ],
               ),
             ).animate(delay: 100.ms).fadeIn(duration: 280.ms),
 
@@ -280,9 +265,24 @@ class AlertsScreen extends ConsumerWidget {
                     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
                   }
 
-                  final filtered = selectedTicker == null
-                      ? items
-                      : items.where((a) => a.ticker.toUpperCase() == selectedTicker.toUpperCase()).toList();
+                  final filtered = items.where((a) {
+                    if (selectedTicker != null &&
+                        a.ticker.toUpperCase() != selectedTicker.toUpperCase()) {
+                      return false;
+                    }
+                    switch (view) {
+                      case AlertView.unread:
+                        return !readIds.contains(a.id);
+                      case AlertView.read:
+                        return readIds.contains(a.id);
+                      case AlertView.positive:
+                        return a.direction == SentimentDirection.positive;
+                      case AlertView.negative:
+                        return a.direction == SentimentDirection.negative;
+                      case AlertView.all:
+                        return true;
+                    }
+                  }).toList();
                   final todayItems =
                       filtered.where((a) => _isToday(a.receivedAt)).toList();
                   final yesterdayItems =
@@ -579,6 +579,78 @@ class _DisclaimerBarState extends State<_DisclaimerBar> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+String _viewLabel(AppLocalizations l, AlertView v, bool es) {
+  switch (v) {
+    case AlertView.all:
+      return l.allAlerts;
+    case AlertView.unread:
+      return es ? 'Sin leer' : 'Unread';
+    case AlertView.read:
+      return es ? 'Leídas' : 'Read';
+    case AlertView.positive:
+      return l.positive;
+    case AlertView.negative:
+      return l.negative;
+  }
+}
+
+/// Compact filter chip for the Alerts toolbar (one active at a time).
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final bool selected;
+  final Color primary;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.primary,
+    required this.isDark,
+    required this.onTap,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? primary.withValues(alpha: 0.14) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? primary.withValues(alpha: 0.6) : border,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 11, color: selected ? primary : AppColors.textMutedDark),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: selected ? primary : AppColors.textMutedDark,
+              ),
+            ),
+          ],
         ),
       ),
     );

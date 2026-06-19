@@ -373,3 +373,8 @@ class ReadAlertsNotifier extends StateNotifier<Set<String>> {
 
 final readAlertsProvider =
     StateNotifierProvider<ReadAlertsNotifier, Set<String>>((ref) => ReadAlertsNotifier());
+
+// Single client-side filter for the Alerts screen (one active chip at a time).
+enum AlertView { all, unread, read, positive, negative }
+
+final alertViewProvider = StateProvider<AlertView>((ref) => AlertView.all);
