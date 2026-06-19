@@ -369,27 +369,7 @@ class AlertsScreen extends ConsumerWidget {
                 },
               ),
             ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                  ),
-                ),
-              ),
-              child: Text(
-                'Not financial advice. Profit Alerts provides AI-generated market signal summaries for informational purposes only. '
-                'Not a recommendation to buy, sell, or hold any security. Consult a qualified financial advisor before making investment decisions.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 10,
-                  height: 1.5,
-                  color: AppColors.textMuted.withValues(alpha: 0.6),
-                ),
-              ),
-            ),
+            _DisclaimerBar(isDark: isDark),
           ],
         ),
       ),
@@ -521,6 +501,63 @@ class _AlertCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
+    );
+  }
+}
+
+/// Compact, tappable legal disclaimer. Collapsed to one line by default so it
+/// stops eating half the Alerts screen; expands on tap. Can't be removed
+/// entirely (App Store requires it on financial apps), but it can be tiny.
+class _DisclaimerBar extends StatefulWidget {
+  final bool isDark;
+  const _DisclaimerBar({required this.isDark});
+
+  @override
+  State<_DisclaimerBar> createState() => _DisclaimerBarState();
+}
+
+class _DisclaimerBarState extends State<_DisclaimerBar> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = AppColors.textMuted.withValues(alpha: 0.6);
+    return GestureDetector(
+      onTap: () => setState(() => _open = !_open),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: widget.isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              ),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.info_outline_rounded, size: 12, color: muted),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  _open
+                      ? 'Not financial advice. Profit Alerts provides AI-generated market signal summaries for informational purposes only. '
+                          'Not a recommendation to buy, sell, or hold any security. Consult a qualified financial advisor before making investment decisions.'
+                      : 'Not financial advice — informational only. Tap to read more.',
+                  maxLines: _open ? null : 1,
+                  overflow: _open ? TextOverflow.visible : TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(fontSize: 10, height: 1.5, color: muted),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
