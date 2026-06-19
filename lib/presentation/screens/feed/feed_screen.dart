@@ -104,6 +104,11 @@ class FeedScreen extends ConsumerWidget {
                 ],
               ).animate(delay: 60.ms).fadeIn(duration: 300.ms),
             ),
+            // Search bar — filters the feed by ticker / headline
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              child: _FeedSearchBar(isDark: isDark, primary: primary),
+            ).animate(delay: 90.ms).fadeIn(duration: 280.ms),
             Expanded(
               child: feed.when(
                 loading: () => ListView.builder(
@@ -559,6 +564,91 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
           ),
         ],
         ),
+      ),
+    );
+  }
+}
+
+/// Feed search bar — debounced free-text filter over ticker/headline.
+class _FeedSearchBar extends ConsumerStatefulWidget {
+  final bool isDark;
+  final Color primary;
+  const _FeedSearchBar({required this.isDark, required this.primary});
+
+  @override
+  ConsumerState<_FeedSearchBar> createState() => _FeedSearchBarState();
+}
+
+class _FeedSearchBarState extends ConsumerState<_FeedSearchBar> {
+  final _ctrl = TextEditingController();
+  final _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl.text = ref.read(feedSearchProvider);
+    _focus.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = widget.isDark;
+    final primary = widget.primary;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final focused = _focus.hasFocus;
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCard : AppColors.lightCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: focused ? primary.withValues(alpha: 0.6) : border,
+          width: focused ? 1.5 : 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.search_rounded, size: 18,
+              color: focused ? primary : AppColors.textMuted),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: _ctrl,
+              focusNode: _focus,
+              textInputAction: TextInputAction.search,
+              style: GoogleFonts.inter(
+                fontSize: 15,
+                color: isDark ? Colors.white : AppColors.black,
+              ),
+              decoration: InputDecoration(
+                isCollapsed: true,
+                hintText: 'Search news — Tesla, NVDA…',
+                hintStyle: GoogleFonts.inter(
+                    fontSize: 14, color: AppColors.textMuted),
+                border: InputBorder.none,
+              ),
+              onChanged: (v) =>
+                  ref.read(feedSearchProvider.notifier).state = v,
+            ),
+          ),
+          if (_ctrl.text.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                _ctrl.clear();
+                ref.read(feedSearchProvider.notifier).state = '';
+                setState(() {});
+              },
+              child: Icon(Icons.close_rounded, size: 16, color: AppColors.textMuted),
+            ),
+        ],
       ),
     );
   }

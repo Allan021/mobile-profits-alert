@@ -519,6 +519,10 @@ class _AddTickerSheetState extends ConsumerState<_AddTickerSheet> {
     final l = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = isDark ? AppColors.primaryDark : AppColors.primaryLight;
+    final owned = ref.watch(watchlistProvider).maybeWhen(
+      data: (tickers) => tickers.map((t) => t.symbol.toUpperCase()).toSet(),
+      orElse: () => <String>{},
+    );
 
     return Padding(
       padding:
@@ -568,13 +572,13 @@ class _AddTickerSheetState extends ConsumerState<_AddTickerSheet> {
                     subtitle: Text(t.companyName,
                         style: GoogleFonts.inter(
                             fontSize: 12, color: AppColors.textMuted)),
-                    trailing: IconButton(
-                      icon: Icon(Icons.add_circle_outline, color: primary),
-                      onPressed: () async {
-                        await widget.onAdd(t.symbol);
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                    ),
+                    trailing: owned.contains(t.symbol.toUpperCase())
+                        ? Icon(Icons.check_circle, color: primary)
+                        : IconButton(
+                            icon: Icon(Icons.add_circle_outline, color: primary),
+                            // Stay open so several tickers can be added in a row.
+                            onPressed: () => widget.onAdd(t.symbol),
+                          ),
                   )
                       .animate(
                           delay: Duration(

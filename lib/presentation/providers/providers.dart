@@ -231,12 +231,26 @@ const _sentinel = Object();
 
 final feedFilterProvider = StateProvider<FeedFilter>((ref) => const FeedFilter());
 
+// Free-text search over the feed (ticker / headline / affected tickers).
+final feedSearchProvider = StateProvider<String>((ref) => '');
+
 final feedProvider = FutureProvider<List<NewsItem>>((ref) async {
   final repo = ref.watch(newsRepoProvider);
   final filter = ref.watch(feedFilterProvider);
+  final query = ref.watch(feedSearchProvider).trim().toLowerCase();
   final watchlist = ref.watch(watchlistProvider);
   final items = await repo.getFeed(pageSize: 50);
-  if (!filter.hasFilter) return items;
+
+  final searched = query.isEmpty
+      ? items
+      : items.where((item) {
+          return item.ticker.toLowerCase().contains(query) ||
+              item.headline.toLowerCase().contains(query) ||
+              item.affectedTickers.any((s) => s.toLowerCase().contains(query));
+        }).toList();
+
+  if (!filter.hasFilter) return searched;
+  final base = searched;
 
   // Watchlist symbols for filtering
   final watchlistSymbols = watchlist.maybeWhen(
@@ -244,7 +258,7 @@ final feedProvider = FutureProvider<List<NewsItem>>((ref) async {
     orElse: () => <String>{},
   );
 
-  return items.where((item) {
+  return base.where((item) {
     if (filter.watchlistOnly && watchlistSymbols.isNotEmpty) {
       final itemTickers = {...item.affectedTickers.map((s) => s.toUpperCase()), item.ticker.toUpperCase()};
       if (itemTickers.intersection(watchlistSymbols).isEmpty) return false;
