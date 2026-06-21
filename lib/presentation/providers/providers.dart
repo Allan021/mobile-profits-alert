@@ -239,19 +239,13 @@ final feedProvider = FutureProvider<List<NewsItem>>((ref) async {
   final filter = ref.watch(feedFilterProvider);
   final query = ref.watch(feedSearchProvider).trim();
   final watchlist = ref.watch(watchlistProvider);
+  // Backend resolves q -> ticker, ingests on demand, and matches. Trust it;
+  // re-filtering client-side by literal substring dropped valid hits
+  // (e.g. "nvidia" -> NVDA news whose headline lacks the literal word).
   final items = await repo.getFeed(pageSize: 50, q: query.isEmpty ? null : query);
 
-  final queryLower = query.toLowerCase();
-  final searched = query.isEmpty
-      ? items
-      : items.where((item) {
-          return item.ticker.toLowerCase().contains(queryLower) ||
-              item.headline.toLowerCase().contains(queryLower) ||
-              item.affectedTickers.any((s) => s.toLowerCase().contains(queryLower));
-        }).toList();
-
-  if (!filter.hasFilter) return searched;
-  final base = searched;
+  if (!filter.hasFilter) return items;
+  final base = items;
 
   // Watchlist symbols for filtering
   final watchlistSymbols = watchlist.maybeWhen(
