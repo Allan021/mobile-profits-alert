@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -582,6 +583,7 @@ class _FeedSearchBar extends ConsumerStatefulWidget {
 class _FeedSearchBarState extends ConsumerState<_FeedSearchBar> {
   final _ctrl = TextEditingController();
   final _focus = FocusNode();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -592,6 +594,7 @@ class _FeedSearchBarState extends ConsumerState<_FeedSearchBar> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _ctrl.dispose();
     _focus.dispose();
     super.dispose();
@@ -635,13 +638,19 @@ class _FeedSearchBarState extends ConsumerState<_FeedSearchBar> {
                     fontSize: 14, color: AppColors.textMuted),
                 border: InputBorder.none,
               ),
-              onChanged: (v) =>
-                  ref.read(feedSearchProvider.notifier).state = v,
+              onChanged: (v) {
+                _debounce?.cancel();
+                _debounce = Timer(const Duration(milliseconds: 500), () {
+                  ref.read(feedSearchProvider.notifier).state = v;
+                });
+                setState(() {});
+              },
             ),
           ),
           if (_ctrl.text.isNotEmpty)
             GestureDetector(
               onTap: () {
+                _debounce?.cancel();
                 _ctrl.clear();
                 ref.read(feedSearchProvider.notifier).state = '';
                 setState(() {});

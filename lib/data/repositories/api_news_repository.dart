@@ -10,9 +10,9 @@ class ApiNewsRepository implements NewsRepository {
   ApiNewsRepository(this._feed);
 
   @override
-  Future<List<NewsItem>> getFeed({int page = 0, int pageSize = 20}) async {
+  Future<List<NewsItem>> getFeed({int page = 0, int pageSize = 20, String? q}) async {
     try {
-      final items = await _feed.getFeed(page: page + 1, perPage: pageSize);
+      final items = await _feed.getFeed(page: page + 1, perPage: pageSize, q: q);
       return items.map((m) => m.toNewsItem()).toList();
     } catch (e, st) {
       if (kDebugMode) debugPrint('[News] getFeed error: $e\n$st');

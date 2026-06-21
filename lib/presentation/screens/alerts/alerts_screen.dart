@@ -14,7 +14,7 @@ import '../../../domain/entities/news_item.dart' show SentimentDirection;
 import '../../providers/providers.dart';
 import '../../widgets/sentiment_badge.dart';
 
-final _alertTickerFilterProvider = StateProvider<String?>((ref) => null);
+
 
 class AlertsScreen extends ConsumerWidget {
   const AlertsScreen({super.key});
@@ -65,7 +65,7 @@ class AlertsScreen extends ConsumerWidget {
       data: (tickers) => tickers.map((t) => t.symbol).toList(),
       orElse: () => <String>[],
     );
-    final selectedTicker = ref.watch(_alertTickerFilterProvider);
+    final selectedTicker = ref.watch(alertTickerFilterProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -163,7 +163,7 @@ class AlertsScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () => ref.read(_alertTickerFilterProvider.notifier).state = null,
+                      onTap: () => ref.read(alertTickerFilterProvider.notifier).state = null,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
                         margin: const EdgeInsets.only(right: 8),
@@ -185,7 +185,7 @@ class AlertsScreen extends ConsumerWidget {
                     ...watchlistSymbols.map((sym) {
                       final isSelected = selectedTicker == sym;
                       return GestureDetector(
-                        onTap: () => ref.read(_alertTickerFilterProvider.notifier).state = isSelected ? null : sym,
+                        onTap: () => ref.read(alertTickerFilterProvider.notifier).state = isSelected ? null : sym,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 180),
                           margin: const EdgeInsets.only(right: 8),

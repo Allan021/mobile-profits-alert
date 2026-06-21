@@ -237,16 +237,17 @@ final feedSearchProvider = StateProvider<String>((ref) => '');
 final feedProvider = FutureProvider<List<NewsItem>>((ref) async {
   final repo = ref.watch(newsRepoProvider);
   final filter = ref.watch(feedFilterProvider);
-  final query = ref.watch(feedSearchProvider).trim().toLowerCase();
+  final query = ref.watch(feedSearchProvider).trim();
   final watchlist = ref.watch(watchlistProvider);
-  final items = await repo.getFeed(pageSize: 50);
+  final items = await repo.getFeed(pageSize: 50, q: query.isEmpty ? null : query);
 
+  final queryLower = query.toLowerCase();
   final searched = query.isEmpty
       ? items
       : items.where((item) {
-          return item.ticker.toLowerCase().contains(query) ||
-              item.headline.toLowerCase().contains(query) ||
-              item.affectedTickers.any((s) => s.toLowerCase().contains(query));
+          return item.ticker.toLowerCase().contains(queryLower) ||
+              item.headline.toLowerCase().contains(queryLower) ||
+              item.affectedTickers.any((s) => s.toLowerCase().contains(queryLower));
         }).toList();
 
   if (!filter.hasFilter) return searched;
@@ -392,3 +393,6 @@ final readAlertsProvider =
 enum AlertView { all, unread, read, positive, negative }
 
 final alertViewProvider = StateProvider<AlertView>((ref) => AlertView.all);
+
+// Selected ticker filter for the Alerts screen.
+final alertTickerFilterProvider = StateProvider<String?>((ref) => null);

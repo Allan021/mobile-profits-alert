@@ -220,6 +220,10 @@ class _WatchlistScreenState extends ConsumerState<WatchlistScreen> {
                       ticker: tickers[i],
                       isDark: isDark,
                       primary: primary,
+                      onTap: () {
+                        ref.read(alertTickerFilterProvider.notifier).state = tickers[i].symbol;
+                        context.go('/alerts');
+                      },
                       onRemove: () async {
                         try {
                           await ref
@@ -275,12 +279,14 @@ class _TickerRow extends StatefulWidget {
   final bool isDark;
   final Color primary;
   final VoidCallback onRemove;
+  final VoidCallback onTap;
 
   const _TickerRow({
     required this.ticker,
     required this.isDark,
     required this.primary,
     required this.onRemove,
+    required this.onTap,
   });
 
   @override
@@ -314,6 +320,7 @@ class _TickerRowState extends State<_TickerRow> {
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) => setState(() => _pressed = false),
       onTapCancel: () => setState(() => _pressed = false),
+      onTap: widget.onTap,
       child: AnimatedScale(
         scale: _pressed ? 0.975 : 1.0,
         duration: const Duration(milliseconds: 90),
