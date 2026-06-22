@@ -167,7 +167,12 @@ class NotificationService extends ChangeNotifier {
 
   void _handleNotificationTap(String? itemId) {
     if (kDebugMode) debugPrint('[Push] tapped item_id=$itemId');
-    pendingNavigationToAlerts = true;
+    // item_id present -> open the news detail; otherwise just open Alerts.
+    if (itemId != null && itemId.trim().isNotEmpty) {
+      pendingNavigationItemId = itemId.trim();
+    } else {
+      pendingNavigationToAlerts = true;
+    }
     notifyListeners(); // triggers GoRouter redirect
   }
 
