@@ -92,6 +92,20 @@ class NotificationService extends ChangeNotifier {
 
   Future<String?> getToken() async {
     try {
+      // iOS: the FCM token only exists once the APNs token is set. Right after
+      // login it can still be null -> getToken() returns null -> token never
+      // registers (silent). Wait for APNs with a few retries first.
+      if (Platform.isIOS) {
+        var apns = await _fcm.getAPNSToken();
+        for (var i = 0; apns == null && i < 6; i++) {
+          await Future.delayed(const Duration(seconds: 1));
+          apns = await _fcm.getAPNSToken();
+        }
+        if (apns == null) {
+          if (kDebugMode) debugPrint('[Push] APNs token null after retries; skip');
+          return null;
+        }
+      }
       return await _fcm.getToken();
     } catch (e) {
       if (kDebugMode) debugPrint('[Push] getToken error: $e');
