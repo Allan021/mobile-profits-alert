@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/api/api_client.dart';
+import '../../core/api/api_endpoints.dart';
 import '../../core/api/api_exception.dart';
+import '../../data/models/auth_model.dart';
 import '../../services/notification_service.dart';
 import '../../data/services/google_auth_service.dart';
 import '../../data/repositories/api_news_repository.dart';
@@ -159,6 +161,27 @@ class AuthNotifier extends StateNotifier<AppUser?> {
     } catch (e) {
       if (kDebugMode) debugPrint('[Auth] Google login error: $e');
       return e is ApiException ? e.message : e.toString();
+    }
+  }
+
+  /// Start the one-time 7-day Pro trial. Returns null on success, else error.
+  Future<String?> startTrial() async {
+    try {
+      final res = await apiClient.post(ApiEndpoints.trialStart);
+      final u = res['user'];
+      if (res['ok'] == true && u is Map<String, dynamic>) {
+        state = UserModel.fromJson(u).toEntity();
+        // trial -> pro: register push token now
+        if (state?.canUsePushNotifications == true) {
+          await NotificationService.instance.registerToken(apiClient);
+        }
+        return null;
+      }
+      return res['error']?.toString() ?? 'trial_failed';
+    } on ApiException catch (e) {
+      return e.code ?? e.message; // 'trial_already_used' / 'already_pro'
+    } catch (e) {
+      return e.toString();
     }
   }
 

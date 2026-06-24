@@ -8,6 +8,9 @@ class AppUser {
   final String displayName;
   final UserTier tier;
   final int alertsUsedThisMonth;
+  final bool trialActive;
+  final bool trialEligible;
+  final int trialDaysLeft;
 
   const AppUser({
     required this.id,
@@ -15,6 +18,9 @@ class AppUser {
     required this.displayName,
     required this.tier,
     required this.alertsUsedThisMonth,
+    this.trialActive = false,
+    this.trialEligible = false,
+    this.trialDaysLeft = 0,
   });
 
   bool get isFree => tier == UserTier.free;

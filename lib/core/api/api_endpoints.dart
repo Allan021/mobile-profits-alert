@@ -8,6 +8,7 @@ class ApiEndpoints {
   static const String register = '/api/mobile/auth/register';
   static const String googleAuth = '/api/mobile/auth/google';
   static const String me = '/api/mobile/auth/me';
+  static const String trialStart = '/api/mobile/trial/start';
 
   // User / settings
   static const String userSettings = '/api/mobile/user/settings';

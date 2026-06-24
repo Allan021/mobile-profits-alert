@@ -92,6 +92,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 24),
 
+            // 7-day free trial — offer if never taken; show countdown if active
+            if (user.trialEligible)
+              _TrialOfferCard(isDark: isDark, primary: primary),
+            if (user.trialActive)
+              _TrialActiveCard(daysLeft: user.trialDaysLeft, isDark: isDark),
+
             // Preferences
             _SectionLabel(label: l.preferences),
             _SettingsCard(isDark: isDark, children: [
@@ -615,6 +621,127 @@ class _PlanBadge extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(label, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
+    );
+  }
+}
+
+/// "Start your 7-day free trial" — shown once, only when eligible.
+class _TrialOfferCard extends ConsumerStatefulWidget {
+  final bool isDark;
+  final Color primary;
+  const _TrialOfferCard({required this.isDark, required this.primary});
+
+  @override
+  ConsumerState<_TrialOfferCard> createState() => _TrialOfferCardState();
+}
+
+class _TrialOfferCardState extends ConsumerState<_TrialOfferCard> {
+  bool _loading = false;
+
+  Future<void> _start() async {
+    setState(() => _loading = true);
+    final err = await ref.read(authProvider.notifier).startTrial();
+    if (!mounted) return;
+    setState(() => _loading = false);
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    final msg = err == null
+        ? (es ? '¡Prueba Pro activada por 7 días!' : '7-day Pro trial activated!')
+        : (err.contains('already')
+            ? (es ? 'Ya usaste tu prueba gratis.' : 'You already used your free trial.')
+            : (es ? 'No se pudo activar la prueba.' : 'Could not start the trial.'));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    final p = widget.primary;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [p.withValues(alpha: 0.18), p.withValues(alpha: 0.06)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: p.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(Icons.rocket_launch_rounded, color: p, size: 20),
+            const SizedBox(width: 8),
+            Text(es ? 'Prueba Pro gratis · 7 días' : 'Free Pro trial · 7 days',
+                style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800)),
+          ]),
+          const SizedBox(height: 6),
+          Text(
+            es
+                ? 'Desbloquea todas las funciones Pro por 7 días. Sin tarjeta. Una sola vez.'
+                : 'Unlock every Pro feature for 7 days. No card. One time only.',
+            style: GoogleFonts.inter(fontSize: 13, height: 1.4, color: AppColors.textMuted),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 46,
+            child: ElevatedButton(
+              onPressed: _loading ? null : _start,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: p,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: _loading
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : Text(es ? 'Comenzar prueba gratis' : 'Start free trial',
+                      style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Active-trial countdown banner.
+class _TrialActiveCard extends StatelessWidget {
+  final int daysLeft;
+  final bool isDark;
+  const _TrialActiveCard({required this.daysLeft, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final es = Localizations.localeOf(context).languageCode == 'es';
+    const green = Color(0xFF22C55E);
+    final d = daysLeft <= 0 ? 1 : daysLeft;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: green.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: green.withValues(alpha: 0.35)),
+      ),
+      child: Row(children: [
+        const Icon(Icons.workspace_premium_rounded, color: green, size: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            es
+                ? 'Prueba Pro activa — $d ${d == 1 ? 'día' : 'días'} restantes'
+                : 'Pro trial active — $d ${d == 1 ? 'day' : 'days'} left',
+            style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w700, color: green),
+          ),
+        ),
+      ]),
     );
   }
 }

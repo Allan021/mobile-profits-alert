@@ -4,7 +4,7 @@ import '../fake/fake_news_data.dart';
 
 class FakeNewsRepository implements NewsRepository {
   @override
-  Future<List<NewsItem>> getFeed({int page = 0, int pageSize = 20}) async {
+  Future<List<NewsItem>> getFeed({int page = 0, int pageSize = 20, String? q}) async {
     await Future.delayed(const Duration(milliseconds: 400));
     final start = page * pageSize;
     if (start >= fakeNewsFeed.length) return [];

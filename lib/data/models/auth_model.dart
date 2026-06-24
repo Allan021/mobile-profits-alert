@@ -47,7 +47,14 @@ class UserModel {
     required this.emailVerified,
     required this.watchlistTickers,
     required this.autoAnalysisEnabled,
+    this.trialActive = false,
+    this.trialEligible = false,
+    this.trialDaysLeft = 0,
   });
+
+  final bool trialActive;
+  final bool trialEligible;
+  final int trialDaysLeft;
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -62,6 +69,9 @@ class UserModel {
               .toList() ??
           [],
       autoAnalysisEnabled: json['auto_analysis_enabled'] == true,
+      trialActive: json['trial_active'] == true,
+      trialEligible: json['trial_eligible'] == true,
+      trialDaysLeft: (json['trial_days_left'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -73,6 +83,9 @@ class UserModel {
           displayName.isNotEmpty ? displayName : email.split('@').first,
       tier: _mapTier(planTier),
       alertsUsedThisMonth: 0,
+      trialActive: trialActive,
+      trialEligible: trialEligible,
+      trialDaysLeft: trialDaysLeft,
     );
   }
 
