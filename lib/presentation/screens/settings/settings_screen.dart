@@ -69,7 +69,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         Row(children: [
                           Text(user.displayName, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
                           const SizedBox(width: 8),
-                          _PlanBadge(tier: user.tier),
+                          _PlanBadge(tier: user.tier, trialActive: user.trialActive),
                         ]),
                         Text(user.email, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMuted)),
                       ],
@@ -597,30 +597,29 @@ class _LangTile extends StatelessWidget {
 
 class _PlanBadge extends StatelessWidget {
   final UserTier tier;
-  const _PlanBadge({required this.tier});
+  final bool trialActive;
+  const _PlanBadge({required this.tier, this.trialActive = false});
 
   @override
   Widget build(BuildContext context) {
-    Color color;
-    String label;
-    switch (tier) {
-      case UserTier.pro:
-        color = const Color(0xFF0EA5E9);
-        label = 'Pro';
-        break;
-      case UserTier.free:
-        color = AppColors.textMuted;
-        label = 'Free';
-        break;
-    }
+    final isPro = tier == UserTier.pro;
+    final color = isPro ? const Color(0xFF0EA5E9) : AppColors.textMuted;
+    final label = !isPro ? 'Free' : (trialActive ? 'Pro · Trial' : 'Pro');
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(label, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (isPro) ...[
+          Icon(trialActive ? Icons.workspace_premium_rounded : Icons.star_rounded,
+              size: 11, color: color),
+          const SizedBox(width: 3),
+        ],
+        Text(label, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w800, color: color)),
+      ]),
     );
   }
 }
@@ -736,8 +735,8 @@ class _TrialActiveCard extends StatelessWidget {
         Expanded(
           child: Text(
             es
-                ? 'Prueba Pro activa — $d ${d == 1 ? 'día' : 'días'} restantes'
-                : 'Pro trial active — $d ${d == 1 ? 'day' : 'days'} left',
+                ? 'Te quedan $d ${d == 1 ? 'día' : 'días'} de tu prueba Pro gratis'
+                : '$d ${d == 1 ? 'day' : 'days'} left in your free Pro trial',
             style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w700, color: green),
           ),
         ),
