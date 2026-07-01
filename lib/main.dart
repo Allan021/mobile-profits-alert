@@ -10,7 +10,7 @@ import 'firebase_options.dart';
 import 'presentation/providers/providers.dart';
 import 'services/notification_service.dart';
 
-// Build 18 — trial model, push fixes, feed search.
+// Build 19 — iOS aps-environment=production (TestFlight push fix).
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
